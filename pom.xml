@@ -1,0 +1,294 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	
+	
+	<!-- 模型版本,对于Maven2和Maven3来说，它只能是4.0.0 -->
+	<modelVersion>4.0.0</modelVersion>
+
+	
+	<!-- Maven项目中，groupId、artifactId、version三个元素生成了一个Maven项目的基本坐标，Maven库中构成项目的唯一标识 -->
+	<groupId>com.lotus</groupId><!-- 公司或者组织的唯一标志 -->
+	<artifactId>maven-test</artifactId><!-- 项目名，一般用“项目名-子项目名”方式命名 -->
+	<version>0.0.1-SNAPSHOT</version><!-- 版本号，一般 SNAPSHOT表示是快照版本，release表示稳定版本-->  
+
+
+ 	<!-- 打包的机制，如pom,jar, maven-plugin, ejb, war, ear, rar, par，默认为jar --> 
+	<packaging>jar</packaging>
+
+	<!-- 项目名 -->
+	<name>maven-test</name>
+	
+	 <!--项目主页的URL, Maven产生的文档用-->
+	<url>http://maven.apache.org</url>
+
+
+	<!-- 为pom定义一些常量，在pom中的其它地方可以直接引用 使用方式 如下 ：${file.encoding} -->
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<java.source.version>1.8</java.source.version>  
+        <java.target.version>1.8</java.target.version>
+	</properties>
+
+	
+	 <!-- 定义本项目的依赖关系 -->  
+	<dependencies>
+		<!-- 一般情况下，maven是通过groupId、artifactId、version这三个元素值（俗称坐标）来检索该构件， 然后引入你的工程。如果别人想引用你现在开发的这个项目（前提是已开发完毕并发布到了远程仓库），-->   
+        <!-- 就需要在他的pom文件中新建一个dependency节点，将本项目的groupId、artifactId、version写入， maven就会把你上传的jar包下载到他的本地 -->
+        <!-- Maven工程首先会从本地仓库中获取jar包，当无法获取指定jar包时，本地仓库会从远程仓库（中央仓库）中下载jar包，并放入本地仓库以备将来使用 -->
+		<dependency>
+		    <groupId>junit</groupId>
+		    <artifactId>junit</artifactId>
+		    <version>4.12</version>
+		    
+		    <!-- maven认为，程序对外部的依赖会随着程序的所处阶段和应用场景而变化，所以maven中的依赖关系有作用域(scope)的限制。 -->  
+            <!--scope包含如下的取值：compile（编译范围）、provided（已提供范围）、runtime（运行时范围）、test（测试范围）、system（系统范围）
+            	 * compile，缺省值，适用于所有阶段，会随着项目一起发布。
+    			 * provided，类似compile，期望JDK、容器或使用者会提供这个依赖。如servlet.jar。 只能作用在编译和测试阶段，打包时不会发布在项目中。
+    			 * runtime，只在运行时使用，如JDBC驱动，适用运行和测试阶段，在编译阶段无效，会打包到项目中。
+    			 * test，只在测试时使用，用于编译和运行测试代码。不会随项目发布。 
+    			 * system，类似provided，需要显式提供包含依赖的jar，Maven不会在Repository中查找它。 	
+             -->  
+		    <scope>test</scope>
+		    
+		    
+		    <!-- 屏蔽依赖关系。 比如项目中使用的libA依赖某个库的1.0版，libB依赖某个库的2.0版，现在想统一使用2.0版，就应该屏蔽掉对1.0版的依赖 -->  
+            <exclusions>  
+                <exclusion>  
+                    <groupId>org.slf4j</groupId>  
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>  
+            </exclusions>  
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>4.3.3.RELEASE</version>
+			
+		</dependency>
+		
+		<dependency>
+			<groupId>commons-beanutils</groupId>
+			<artifactId>commons-beanutils</artifactId>
+			<version>1.9.3</version>
+		</dependency>
+	</dependencies>
+	
+	<!-- 项目构建的相关配置 -->
+	<build>
+		<!-- 产生的构件的文件名，默认值是${project.artifactId}-${project.version} -->  
+    	<finalName>${project.artifactId}-${project.version}</finalName>
+    	
+    	<!-- 执行build任务时，如果没有指定目标，将使用的默认值 -->
+    	<defaultGoal>package</defaultGoal>
+    	
+    	
+    	<!-- 项目构建产生的所有文件存放的目录,默认为${basedir}/target，即项目根目录下的target --> 
+    	<directory>${basedir}/target</directory>
+    	
+    	<!--项目源码目录，当构建项目的时候，构建系统会编译目录里的源码。该路径是相对于pom.xml的相对路径。 -->  
+	    <sourceDirectory>${basedir}/src/main/java</sourceDirectory>  
+	  
+	    <!-- 项目主代码编译输出目录 -->
+    	<outputDirectory>${basedir}/target/classes</outputDirectory>
+	    
+	    <!--项目脚本源码目录，该目录和源码目录不同 绝大多数情况下，该目录下的内容会被拷贝到输出目录(因为脚本是被解释的，而不是被编译的)。 -->  
+	    <scriptSourceDirectory>${basedir}/src/main/scripts</scriptSourceDirectory>  
+	  
+	    <!--项目单元测试使用的源码目录，当测试项目的时候，构建系统会编译目录里的源码。该路径是相对于pom.xml的相对路径。 -->  
+	    <testSourceDirectory>${basedir}/src/test/java</testSourceDirectory>  
+	  
+	  
+	    <!--被编译过的测试class文件存放的目录。 -->  
+	    <testOutputDirectory>${basedir}\target\test-classes</testOutputDirectory>  
+    
+    
+    	<!--当filtering开关打开时，使用到的过滤器属性文件列表。 -->  
+    	<!--定义*.properties文件，包含一个properties列表，该列表会应用的支持filter的resources中。
+    		也就是说，定义在filter的文件中的"name=value"值对会在build时代替${name}值应用到resources中。
+    		Maven的默认filter文件夹是${basedir}/src/main/filters/-->  
+	    <filters>  
+	        <filter>${basedir}/src/main/filters/application-pro.properties</filter>  
+	    </filters>
+
+
+		<!--项目相关的所有资源路径列表，resources（通常）不是代码，他们不被编译，但是被绑定在你的项目,
+			例如和项目相关的配置文件、属性文件，这些资源被包含在最终的打包文件里。 
+			src/main/resources目录下的文件 默认为被构建到项目中，默认存放的路径为${project.build.outputDirectory}-->  
+	    <resources>  
+	        <resource>
+	        	<!-- 定义resource所在的文件夹，默认为${basedir}/src/main/resources -->
+	        	<directory>${basedir}/src/main/resources</directory>
+	        	
+	        	<!--包含的模式列表 -->  
+	            <includes>  
+	                <include>**/*.properties</include>  
+	                <include>**/*.xml</include> 
+	                <include>**/*</include>   
+	            </includes>
+	              
+	             <!--排除的模式列表 如果<include>与<exclude>划定的范围存在冲突，以<exclude>为准 
+	            <excludes>  
+	                <exclude>jdbc.properties</exclude>  
+	            </excludes>
+	            -->
+	            
+	           <!--描述了资源构建后存放的路径。该路径相对target/classes目录（例如${project.build.outputDirectory}）。 -->  
+	           <targetPath>${project.build.outputDirectory}</targetPath>  
+	  
+	            <!--是否使用参数值代替参数名。参数值取自properties元素或者文件里配置的属性，文件在filters元素里列出。 -->  
+	            <filtering>false</filtering>  
+	        </resource>  
+	    </resources>
+    	
+    	<!--单元测试相关的所有资源路径，配制方法与resources类似 --> 
+    	<testResources></testResources>
+        
+        
+        <!--使用的插件列表 。 --> 
+        <plugins>
+			<plugin>
+				<!-- 插件名称标识 -->
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>3.1.0</version>
+				
+				 <!--一个插件中可能会多个具体的插件目标， 每个目标有特别的配置，
+				 	 这里配置的是所有插件目标公用的配置-->  
+				<configuration>
+					<!-- put your configurations here -->
+				</configuration>
+				
+				
+				<!--在构建生命周期中执行一组目标的配置。每个目标可能有不同的配置，
+					执行目标要绑定到具体的生命周期阶段中 -->
+				<executions>
+					<execution>
+						<!-- 执行目标的标识符,可不写 -->
+						<id>shadex</id>
+						
+						<!--绑定了目标的构建生命周期阶段，如果省略，目标会被绑定到源数据里配置的默认阶段 --> 
+						<phase>package</phase>
+						
+						<!-- 配置的具体的要执行的插件目标  -->
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						
+						<!-- 当前执行目标的特定配置 -->
+						<configuration>
+							<artifactSet>
+								<excludes></excludes>
+							</artifactSet>
+						</configuration>
+						
+						<!--配置是否被传播到子POM -->  
+                    	<inherited>false</inherited>  
+					</execution>
+				</executions>
+			</plugin>
+			
+			<!-- 生成javadoc文档包的插件 -->  
+            <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.0.0</version>
+				<configuration>
+					<aggregate>true</aggregate>
+				</configuration>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			
+			<!-- 生成sources源码包的插件 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+		        <artifactId>maven-source-plugin</artifactId>
+		        <version>3.0.1</version>
+		        <configuration>
+		        	<outputDirectory>${project.build.directory}</outputDirectory>
+			        <finalName>${project.build.finalName}</finalName>
+			        <attach>true</attach>
+			    </configuration>
+			    <executions>
+			    	<execution>
+			    		<phase>verify</phase>
+			    		<goals>
+			    			<goal>jar-no-fork</goal>
+			    		</goals>
+			    	</execution>
+			    </executions>
+			</plugin>
+		</plugins>
+		
+		
+		<!--主要定义插件的共同元素、扩展元素集合，类似于dependencyManagement， -->  
+    	<!--所有继承于此项目的子项目都能使用。该插件配置项直到被引用时才会被解析或绑定到生命周期。 -->  
+    	<!--给定插件的任何本地配置都会覆盖这里的配置 -->  
+    	<pluginManagement>  
+        </pluginManagement>
+        
+	</build>
+	
+	<!--项目分发信息，在执行mvn deploy后表示要发布的位置。 -->  
+	<!--有了这些信息就可以把网站部署到远程服务器或者把构件部署到远程仓库。 --> 
+	<distributionManagement>
+		
+		<!--部署项目产生的构件到远程仓库需要的信息 -->  
+	    <repository>
+	    	<id>nexus-bgi</id>  
+	        <name>nexus-bgi-releases</name>  
+	        <url>http://192.168.214.128:8081/repository/maven-releases/</url>
+	    </repository>
+	    
+	    <snapshotRepository>
+	    	 <!--是分配给快照一个唯一的版本号（由时间戳和构建流水号），还是每次都使用相同的版本号 -->  
+	        <!--参见repositories/repository元素 -->  
+	        <uniqueVersion>true</uniqueVersion>  
+	    	<id>nexus-bgi</id>
+	    	<name>nexus-bgi-snapshots</name>  
+	        <url>http://192.168.214.128:8081/repository/maven-snapshots/</url>
+	    </snapshotRepository>  
+	</distributionManagement>
+	
+	
+	
+	<!--远程仓库配置 默认依赖构件会从maven中央存储库maven-central(https://repo1.maven.org/maven2/)下载，
+		配置则会从配置的远程仓库中下载,会根据配置顺序选择远程仓库下载构建，直到下载成功,或构建失败
+	-->
+	<repositories>
+		<repository>
+			<!--远程仓库唯一标识符,可以用来匹配在settings.xml文件里配置的远程仓库 -->
+			<id>nexus-bgi</id>
+			
+			<!--远程仓库URL，按protocol://hostname/path形式 --> 
+			<url>http://192.168.214.128:8081/repository/maven-public/</url>
+			
+			<!--如何处理远程仓库里发布版本的下载 -->  
+			<releases>
+				<!--true或者false表示该仓库是否为下载某种类型构件（发布版，快照版）开启。 -->  
+				<enabled>true</enabled>
+			</releases>
+			
+			<!--如何处理远程仓库里快照版本的下载。有了releases和snapshots这两组配置， -->  
+        	<!--POM就可以在每个单独的仓库中，为每种类型的构件采取不同的策略。 -->  
+        	<!--例如，可能有人会决定只为开发目的开启对快照版本下载的支持 -->  
+			<snapshots>
+				<!--true或者false表示该仓库是否为下载某种类型构件（发布版，快照版）开启。 -->  
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>nexus-ali</id>
+			<url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+		</repository>
+	</repositories>
+	
+</project>
